@@ -797,6 +797,7 @@
     hidden("poolPanel", next !== "pool");
     hidden("statsPanel", next !== "stats");
     hidden("policyPanel", next !== "policy");
+    hidden("aboutPanel", next !== "about");
     if (next === "pool") loadPool();
     if (next === "stats") loadStats();
     if (next === "policy") { loadPolicy(); loadLogs(); }
@@ -1272,6 +1273,8 @@
     });
     if (location.hash === "#action=manage-pool") tab("pool");
     else if (location.hash === "#action=stats") tab("stats");
+    else if (location.hash === "#action=policy") tab("policy");
+    else if (location.hash === "#action=about") tab("about");
     else if (location.hash === "#action=batch-import") $("pasteAccounts").focus();
     updateLineCounter();
     setBusy(false);
