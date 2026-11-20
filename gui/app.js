@@ -1319,23 +1319,34 @@
         btn.textContent = "检查中…";
         if (badge) { badge.className = "version-badge"; badge.textContent = "正在连接 GitHub…"; }
         if (result) result.textContent = "";
+        const shown = (v) => "v" + String(v || "").replace(/^v/i, "");
         try {
           const data = await api("version");
-          if ($("aboutVersion") && data.current) $("aboutVersion").textContent = "v" + String(data.current).replace(/^v/i, "");
-          if ($("infoVersion") && data.current) $("infoVersion").textContent = "v" + String(data.current).replace(/^v/i, "");
-          if (data.checkError) {
-            if (badge) { badge.className = "version-badge err"; badge.textContent = "检查失败"; }
-            if (result) result.textContent = "暂时查不到最新版本（" + data.checkError + "）。已安装 v" + data.current + "，可稍后重试。";
-          } else if (data.hasUpdate) {
+          if ($("aboutVersion") && data.current) $("aboutVersion").textContent = shown(data.current);
+          if ($("infoVersion") && data.current) $("infoVersion").textContent = shown(data.current);
+          if (data.hasUpdate) {
             if (badge) { badge.className = "version-badge new"; badge.textContent = "有新版本 " + data.latest; }
-            if (result) result.textContent = "当前 v" + data.current + "，最新 " + data.latest + "。复制上面的「更新到最新」命令即可升级。";
-          } else {
+            if (result) {
+              result.textContent = "当前 " + shown(data.current) + "，最新 " + shown(data.latest) +
+                "。复制上面的「更新到最新」命令即可升级。";
+            }
+          } else if (data.latest) {
+            // 查到了并且一致 —— 这才是常态，不该出现"失败"字样。
             if (badge) { badge.className = "version-badge ok"; badge.textContent = "已是最新"; }
-            if (result) result.textContent = "当前 v" + data.current + "，已是最新版本。";
+            if (result) result.textContent = "当前 " + shown(data.current) + "，已是最新版本。";
+          } else {
+            // 真的没查到：灰色中性提示，不吓人，也给出可操作建议。
+            if (badge) { badge.className = "version-badge"; badge.textContent = "当前 " + shown(data.current); }
+            if (result) {
+              result.textContent = "暂时连不上更新服务器" +
+                (data.checkError ? "（" + data.checkError + "）" : "") +
+                "。当前 " + shown(data.current) + "，直接复制「更新到最新」命令执行也只是多一次空跑，不影响使用。";
+            }
           }
         } catch (err) {
-          if (badge) { badge.className = "version-badge err"; badge.textContent = "检查失败"; }
-          if (result) result.textContent = "检查更新失败：" + err.message;
+          const cur = ($("infoVersion")?.textContent || $("aboutVersion")?.textContent || "").trim();
+          if (badge) { badge.className = "version-badge"; badge.textContent = cur ? "当前 " + cur : "当前版本"; }
+          if (result) result.textContent = "暂时连不上更新服务器，不影响使用；可稍后再试。";
         } finally {
           btn.disabled = false;
           btn.textContent = "检查更新";
