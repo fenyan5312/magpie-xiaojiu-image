@@ -301,8 +301,37 @@
         <div class="about-hero">
           <span class="about-logo">玖</span>
           <div class="about-intro">
-            <h2>筱玖生图 <span class="ver">v0.7.0-fork.1</span></h2>
+            <h2>筱玖生图 <span class="ver" id="aboutVersion">v0.7.0-fork.1</span></h2>
             <p>把一个便宜账号变成一整个会自动轮询、自动换号、自动重登的生图号池。导入一次，之后生图不用再操心哪个号还能用。</p>
+          </div>
+        </div>
+
+        <!-- 一键安装 / 更新 -->
+        <div class="about-actions">
+          <div class="action-head">
+            <h3><span class="icon">⌘</span> 一键安装 / 更新</h3>
+            <span id="versionBadge" class="version-badge" role="status">点击右侧命令即可复制</span>
+          </div>
+          <p class="action-note">点一下命令框复制，再到 <strong>Windows 命令行（cmd / PowerShell）</strong>里粘贴回车即可。</p>
+          <div class="cmd-list">
+            <div class="cmd-row">
+              <span class="cmd-label">安装 / 重装</span>
+              <button type="button" class="cmd-copy" data-cmd="magpie plugin add github:fenyan5312/magpie-xiaojiu-image" title="点击复制">
+                <code>magpie plugin add github:fenyan5312/magpie-xiaojiu-image</code>
+                <span class="copy-hint">点击复制</span>
+              </button>
+            </div>
+            <div class="cmd-row">
+              <span class="cmd-label">更新到最新</span>
+              <button type="button" class="cmd-copy" data-cmd="magpie plugin update" title="点击复制">
+                <code>magpie plugin update</code>
+                <span class="copy-hint">点击复制</span>
+              </button>
+            </div>
+          </div>
+          <div class="action-foot">
+            <button id="checkVersion" type="button" class="btn secondary small">检查更新</button>
+            <span id="versionResult" class="muted tiny"></span>
           </div>
         </div>
 
@@ -319,7 +348,7 @@
           <article class="info-card">
             <h3><span class="icon">▣</span> 版本信息</h3>
             <div class="info-list">
-              <div class="kv"><span class="k">插件版本</span><span class="v">v0.7.0-fork.1</span></div>
+              <div class="kv"><span class="k">插件版本</span><span class="v" id="infoVersion">v0.7.0-fork.1</span></div>
               <div class="kv"><span class="k">上游底座</span><span class="v">magpie-gptfree v0.7.0</span></div>
               <div class="kv"><span class="k">许可协议</span><span class="v">MIT</span></div>
               <div class="kv"><span class="k">运行端口</span><span class="v">127.0.0.1:37990</span></div>
@@ -341,10 +370,22 @@
             <h3><span class="icon">◎</span> 开源与反馈</h3>
             <div class="info-list">
               <div class="kv"><span class="k">仓库</span><span class="v"><a href="https://github.com/fenyan5312/magpie-xiaojiu-image" target="_blank" rel="noreferrer">fenyan5312/magpie-xiaojiu-image</a></span></div>
-              <div class="kv kv-block"><span class="k">安装</span><span class="v"><code class="wrap-any">github:fenyan5312/magpie-xiaojiu-image</code></span></div>
+              <div class="kv"><span class="k">许可协议</span><span class="v">MIT · 自由使用与修改</span></div>
               <div class="kv"><span class="k">反馈</span><span class="v"><a href="https://github.com/fenyan5312/magpie-xiaojiu-image/issues" target="_blank" rel="noreferrer">提交 Issue</a></span></div>
             </div>
           </article>
+        </div>
+
+        <!-- 推荐货源 -->
+        <div class="about-sub">
+          <div class="section-head with-top">
+            <h2><span class="step">♪</span> 推荐货源</h2>
+            <span class="muted tiny">点击后在本机默认浏览器打开</span>
+          </div>
+          <div id="supplyList" class="supply-list"></div>
+          <p id="supplyEmpty" class="muted tiny supply-empty hidden">
+            暂无推荐货源。可在此处配置常用账号渠道链接。
+          </p>
         </div>
 
         <div class="about-footer">

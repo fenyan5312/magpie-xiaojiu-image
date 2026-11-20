@@ -1,0 +1,15 @@
+{
+  "_说明": "「关于我们 → 推荐货源」的数据源。改这个文件后刷新插件页面即可生效。只接受 https:// 链接；name 显示标题，desc 是副标题说明。留空数组则显示「暂无推荐货源」。",
+  "suppliers": [
+    {
+      "name": "PriceAI",
+      "desc": "GPT 普号价格对比 · 批量采购渠道",
+      "url": "https://priceai.cc/"
+    },
+    {
+      "name": "筱玖生图 · 仓库",
+      "desc": "查看源码、提交 Issue、跟踪版本更新",
+      "url": "https://github.com/fenyan5312/magpie-xiaojiu-image"
+    }
+  ]
+}

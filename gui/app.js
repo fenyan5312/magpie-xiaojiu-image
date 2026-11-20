@@ -57,10 +57,18 @@
     if (content != null) n.textContent = String(content);
     return n;
   }
+  let noticeTimer = null;
   function notice(message, error = false) {
     const n = $("notice");
+    if (!n) return;
     n.textContent = message;
     n.className = "notice" + (error ? " error" : "");
+    // 提示条固定在视口底部，不自动收起会一直挡着内容。
+    if (noticeTimer) clearTimeout(noticeTimer);
+    noticeTimer = setTimeout(() => {
+      n.className = "notice hidden";
+      n.textContent = "";
+    }, error ? 6000 : 4200);
   }
   function hidden(id, yes) { $(id).classList.toggle("hidden", yes); }
   function countTextLines(text) {
@@ -1243,6 +1251,141 @@
         notice("复制失败；请手动选中日志文本。", true);
       }
     });
+    // --- 关于我们：一键复制 / 版本检测 / 推荐货源 ---------------------------
+
+    /**
+     * 复制命令到系统剪贴板。
+     *
+     * 沙箱 iframe 是 opaque origin：navigator.clipboard 会被拒，
+     * document.execCommand('copy') 也常常返回 false（实测都失败）。
+     * 所以主路径是让本机服务调 clip.exe 写系统剪贴板，
+     * 浏览器 API 只作为非 Windows 环境的兜底。
+     */
+    async function copyText(text) {
+      try {
+        const res = await api("copy", { text });
+        if (res?.copied) return true;
+      } catch { /* 落到浏览器兜底 */ }
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch { /* 再落到 execCommand */ }
+      try {
+        const ta = el("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.top = "-1000px";
+        ta.style.opacity = "0";
+        document.body.append(ta);
+        ta.select();
+        ta.setSelectionRange(0, text.length);
+        const ok = document.execCommand("copy");
+        ta.remove();
+        return ok;
+      } catch { return false; }
+    }
+
+    function setupCmdCopy() {
+      document.querySelectorAll(".cmd-copy").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const text = btn.dataset.cmd || "";
+          if (!text) return;
+          const hint = btn.querySelector(".copy-hint");
+          const original = hint ? hint.textContent : "";
+          const ok = await copyText(text);
+          if (ok) {
+            btn.classList.add("copied");
+            if (hint) hint.textContent = "✓ 已复制";
+            notice("命令已复制到剪贴板。打开 Windows 命令行（cmd）粘贴回车，即可一键完成安装或更新。");
+            setTimeout(() => {
+              btn.classList.remove("copied");
+              if (hint) hint.textContent = original;
+            }, 2400);
+          } else {
+            notice("复制失败，请手动选中命令文本后按 Ctrl+C。", true);
+          }
+        });
+      });
+    }
+
+    function setupVersionCheck() {
+      const btn = $("checkVersion");
+      const badge = $("versionBadge");
+      const result = $("versionResult");
+      if (!btn) return;
+      btn.addEventListener("click", async () => {
+        btn.disabled = true;
+        btn.textContent = "检查中…";
+        if (badge) { badge.className = "version-badge"; badge.textContent = "正在连接 GitHub…"; }
+        if (result) result.textContent = "";
+        try {
+          const data = await api("version");
+          if ($("aboutVersion") && data.current) $("aboutVersion").textContent = "v" + String(data.current).replace(/^v/i, "");
+          if ($("infoVersion") && data.current) $("infoVersion").textContent = "v" + String(data.current).replace(/^v/i, "");
+          if (data.checkError) {
+            if (badge) { badge.className = "version-badge err"; badge.textContent = "检查失败"; }
+            if (result) result.textContent = "暂时查不到最新版本（" + data.checkError + "）。已安装 v" + data.current + "，可稍后重试。";
+          } else if (data.hasUpdate) {
+            if (badge) { badge.className = "version-badge new"; badge.textContent = "有新版本 " + data.latest; }
+            if (result) result.textContent = "当前 v" + data.current + "，最新 " + data.latest + "。复制上面的「更新到最新」命令即可升级。";
+          } else {
+            if (badge) { badge.className = "version-badge ok"; badge.textContent = "已是最新"; }
+            if (result) result.textContent = "当前 v" + data.current + "，已是最新版本。";
+          }
+        } catch (err) {
+          if (badge) { badge.className = "version-badge err"; badge.textContent = "检查失败"; }
+          if (result) result.textContent = "检查更新失败：" + err.message;
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "检查更新";
+        }
+      });
+    }
+
+    /** 推荐货源由后端 /api/suppliers 提供，前端只负责渲染与点击打开。 */
+    async function loadSuppliers() {
+      const list = $("supplyList");
+      const empty = $("supplyEmpty");
+      if (!list) return;
+      let items = [];
+      try {
+        const data = await api("suppliers");
+        items = Array.isArray(data?.suppliers) ? data.suppliers : [];
+      } catch {
+        items = [];
+      }
+      list.replaceChildren();
+      if (!items.length) {
+        if (empty) empty.classList.remove("hidden");
+        return;
+      }
+      if (empty) empty.classList.add("hidden");
+      list.append(...items.map((item) => {
+        const btn = el("button", "supply-item");
+        btn.type = "button";
+        btn.title = "点击在默认浏览器打开：" + item.url;
+        const icon = el("span", "supply-icon", String(item.name || "?").slice(0, 1));
+        const text = el("span", "supply-text");
+        text.append(el("span", "supply-name", item.name || "未命名"));
+        if (item.desc) text.append(el("span", "supply-desc", item.desc));
+        btn.append(icon, text, el("span", "supply-arrow", "↗"));
+        btn.addEventListener("click", async () => {
+          btn.disabled = true;
+          try {
+            const res = await api("open-link", { url: item.url });
+            if (res?.opened) notice("已在默认浏览器打开：" + (item.name || item.url));
+            else notice("浏览器没能自动打开，链接如下：\n" + (res?.url || item.url), true);
+          } catch (err) {
+            notice("打开失败：" + err.message, true);
+          } finally {
+            btn.disabled = false;
+          }
+        });
+        return btn;
+      }));
+    }
+
     function refreshOnReturn() {
       loadPendingDraft();
       if (oauthPollTimer) void pollOAuthStatus();
@@ -1271,6 +1414,10 @@
         }
       }
     });
+    setupCmdCopy();
+    setupVersionCheck();
+    void loadSuppliers();
+
     if (location.hash === "#action=manage-pool") tab("pool");
     else if (location.hash === "#action=stats") tab("stats");
     else if (location.hash === "#action=policy") tab("policy");

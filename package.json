@@ -14,7 +14,8 @@
     "README.md",
     "test",
     "gui",
-    "python"
+    "python",
+    "suppliers.json"
   ],
   "scripts": {
     "test": "node --test test/*.test.mjs",
