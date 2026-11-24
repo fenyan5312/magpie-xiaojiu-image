@@ -1,7 +1,7 @@
 """SHA3-512 Proof-of-Work token builder for ChatGPT Web sentinel flow.
 
-Ported from chatgpt2api-native/utils/pow.py and adapted to Python stdlib only
-(base64, hashlib, uuid) so no additional third-party dependencies are required.
+Uses the Python standard library only (base64, hashlib, uuid) so no additional
+third-party dependencies are required.
 """
 from __future__ import annotations
 

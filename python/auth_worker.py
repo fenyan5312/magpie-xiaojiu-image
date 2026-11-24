@@ -1,11 +1,12 @@
-"""Standalone DSH-style Platform HTTP auth worker for Magpie Xiaojiu.
+"""Standalone Platform HTTP auth worker for Magpie Xiaojiu.
 
-Adapted from yang0/chatgpt2api-dsh/scripts/auth-worker.py (user-requested).
-Uses the original HTTP authorization/password/TOTP/token flow, not Playwright
-or Codex CLI. The login protocol is OpenAI Platform OAuth, not Codex OAuth.
+Talks to the Platform authorization endpoint directly over HTTP
+(username/password/TOTP/token), no Playwright or Codex CLI involved.
+The login protocol is OpenAI Platform OAuth, not Codex OAuth.
 
-The bundled utils/sentinel.py and utils/pkce.py are MIT-licensed code from
-basketikun/chatgpt2api; source and copyright are recorded in THIRD_PARTY.md.
+Two small helper modules carry MIT-licensed third-party code: the full
+copyright notice and license text live in THIRD_PARTY.md and
+THIRD_PARTY_LICENSE.txt.
 """
 from __future__ import annotations
 

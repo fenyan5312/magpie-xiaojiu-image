@@ -6,7 +6,7 @@
 
 [![Magpie](https://img.shields.io/badge/Magpie-Plugin-3177d9)](https://github.com/yetone/magpie)
 [![license](https://img.shields.io/badge/license-MIT-16845c)](./package.json)
-[![version](https://img.shields.io/badge/version-0.7.0-a36207)](./package.json)
+[![version](https://img.shields.io/badge/version-1.0.0-a36207)](./package.json)
 
 ---
 
@@ -139,7 +139,7 @@ https://github.com/fenyan5312/magpie-xiaojiu-image
 
 ## 免责声明
 
-本项目为个人自用工具，与 OpenAI 无任何关联。插件只保存**你本人有权使用**的账号凭证，请遵守账号服务条款；因使用不当、批量采购账号或违反上游条款导致的封号、限流等后果由使用者自行承担。
+本项目为个人自用工具，与 OpenAI 无任何关联。插件只保存**你本人有权使用**的账号凭证，请遵守账号服务条款；因使用不当、批量采购账号或违反平台条款导致的封号、限流等后果由使用者自行承担。
 
 本项目尚未经过真实账号的完整端到端验收，请自行评估使用风险。
 

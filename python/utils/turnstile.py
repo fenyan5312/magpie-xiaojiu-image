@@ -1,6 +1,7 @@
 """Turnstile VM challenge solver for ChatGPT Web sentinel finalize.
 
-Ported from chatgpt2api-native/utils/turnstile.py (pure Python stdlib).
+Implemented on the Python standard library only; no third-party runtime
+dependency. See THIRD_PARTY.md for the bundled MIT-licensed helpers.
 """
 from __future__ import annotations
 

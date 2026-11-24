@@ -1,7 +1,8 @@
 """Standalone ChatGPT Web picture_v2 image generation & editing worker.
 
-Adapted from chatgpt2api-native (OpenAIBackendAPI + conversation protocol)
-using only curl_cffi + Python standard library (zero Pillow / FastAPI / pybase64).
+Speaks the ChatGPT Web backend API and conversation protocol directly,
+using only curl_cffi + Python standard library
+(zero Pillow / FastAPI / pybase64).
 One request per process: reads JSON on stdin, writes sanitized JSON on stdout.
 """
 from __future__ import annotations
@@ -55,7 +56,7 @@ MAX_INPUT_IMAGE_BYTES = 10 * 1024 * 1024
 MAX_PNG_DECODED_BYTES = 100 * 1024 * 1024
 SUPPORTED_OUTPUT_FORMATS = {"", "auto", "png", "webp", "jpeg", "jpg", "gif"}
 
-# Models exposed to clients (mirrors yang0/chatgpt2api-dsh).
+# Models exposed to clients.
 IMAGE_MODELS = (
     "gpt-image-2",
     "gpt-image-2.6",
